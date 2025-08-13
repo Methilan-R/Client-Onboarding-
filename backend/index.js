@@ -2,12 +2,13 @@ import express from 'express'
 import cors from 'cors'
 import ConnectedToDB from './db/db.js'
 import dotenv from 'dotenv'
-
+import clientRoutes from './routes/client.js'
 dotenv.config()
 const app = express()
 app.use(cors())
 app.use(express.json())
 
+app.use('/api',clientRoutes)
 ConnectedToDB()
 
 app.listen(5000,()=>{
