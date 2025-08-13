@@ -54,6 +54,8 @@ export default function Home() {
     defaultValues: { services: [] },
   });
 
+ 
+
   const onSubmit = async (data: FormValues) => {
     setSuccessMsg("");
     try {
@@ -61,7 +63,7 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
-      });
+      },);
 
       if (!res.ok) throw new Error("Failed to submit");
       setSuccessMsg("Form submitted successfully!");
@@ -69,6 +71,8 @@ export default function Home() {
       alert(err.message);
     }
   };
+
+  
 
   return (
     <div className="max-w-lg mx-auto p-4 min-h-screen">
