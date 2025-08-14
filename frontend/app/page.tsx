@@ -22,14 +22,13 @@ const schema = z.object({
   companyName: z.string().min(2).max(100),
   services: z.array(z.string()).min(1, "Select at least one"),
   budgetUsd: z
-    .number()
-    .int()
-    .min(100)
-    .max(1000000)
-    .optional()
-    .refine((val) => val === undefined || !isNaN(val), {
-      message: "Must be a number",
-    }),
+  .number()
+  .int()
+  .min(100, { message: "Budget must be at least 100" })
+  .max(1000000, { message: "Budget too high" })
+  .refine((val) => !isNaN(val), { message: "Must be a number" }),
+
+
   projectStartDate: z.string().refine(
     (date) => {
       const today = new Date();
@@ -94,8 +93,8 @@ export default function Home() {
 
 
   return (
-    <div className="max-w-lg mx-auto p-4 min-h-screen">
-      <div className="w-full max-w-lg border p-8 rounded-md shadow-2xl">
+    <div className=" mx-auto p-8 flex items-center justify-center min-h-screen bg-gray-800">
+      <div className="w-full  max-w-lg border p-8 rounded-md bg-white shadow-2xl">
         <h1 className="text-2xl font-bold mb-4">Client Onboarding</h1>
         {successMsg && <div className="bg-green-100 p-2 mb-4">{successMsg}</div>}
 
@@ -213,10 +212,9 @@ export default function Home() {
                       placeholder="1000"
                       value={field.value ?? ""}
                       onChange={(e) =>
-                        field.onChange(
-                          e.target.value ? +e.target.value : undefined
-                        )
-                      }
+  field.onChange(e.target.value === "" ? "" : +e.target.value)
+}
+
                     />
                   </FormControl>
                   <FormMessage />
