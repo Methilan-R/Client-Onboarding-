@@ -61,20 +61,37 @@ export default function Home() {
   });
 
   const onSubmit = async (data: FormValues) => {
-    setSuccessMsg("");
-    try {
-      const res = await fetch(process.env.NEXT_PUBLIC_ONBOARD_URL!, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+  setSuccessMsg("");
+  try {
+    const res = await fetch(process.env.NEXT_PUBLIC_ONBOARD_URL!, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
 
-      if (!res.ok) throw new Error("Failed to submit");
-      setSuccessMsg("Form submitted successfully!");
-    } catch (err: any) {
-      alert(err.message);
-    }
-  };
+    if (!res.ok) throw new Error("Failed to submit");
+
+    setSuccessMsg("Form submitted successfully!");
+    form.reset({
+      fullName: "",
+      email: "",
+      companyName: "",
+      services: [],
+      budgetUsd: undefined,
+      projectStartDate: "",
+      acceptTerms: false,
+    });
+
+    // Hide message after 5 seconds
+    setTimeout(() => {
+      setSuccessMsg("");
+    }, 5000);
+  } catch (err: any) {
+    alert(err.message);
+  }
+};
+
+
 
   return (
     <div className="max-w-lg mx-auto p-4 min-h-screen">
