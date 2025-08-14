@@ -11,7 +11,6 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -23,15 +22,14 @@ const schema = z.object({
   companyName: z.string().min(2).max(100),
   services: z.array(z.string()).min(1, "Select at least one"),
   budgetUsd: z
-  .number()
-  .int()
-  .min(100)
-  .max(1000000)
-  .optional()
-  .refine((val) => val === undefined || !isNaN(val), {
-    message: "Must be a number",
-  }),
-
+    .number()
+    .int()
+    .min(100)
+    .max(1000000)
+    .optional()
+    .refine((val) => val === undefined || !isNaN(val), {
+      message: "Must be a number",
+    }),
   projectStartDate: z.string().refine(
     (date) => {
       const today = new Date();
@@ -51,10 +49,16 @@ export default function Home() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { services: [] },
+    defaultValues: {
+      fullName: "",
+      email: "",
+      companyName: "",
+      services: [],
+      budgetUsd: undefined,
+      projectStartDate: "",
+      acceptTerms: false,
+    },
   });
-
- 
 
   const onSubmit = async (data: FormValues) => {
     setSuccessMsg("");
@@ -63,7 +67,7 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
-      },);
+      });
 
       if (!res.ok) throw new Error("Failed to submit");
       setSuccessMsg("Form submitted successfully!");
@@ -72,170 +76,180 @@ export default function Home() {
     }
   };
 
-  
-
   return (
     <div className="max-w-lg mx-auto p-4 min-h-screen">
-     <div className="w-full max-w-lg border p-8 rounded-md shadow-2xl">
-       <h1 className="text-2xl font-bold mb-4">Client Onboarding</h1>
-      {successMsg && <div className="bg-green-100 p-2 mb-4">{successMsg}</div>}
+      <div className="w-full max-w-lg border p-8 rounded-md shadow-2xl">
+        <h1 className="text-2xl font-bold mb-4">Client Onboarding</h1>
+        {successMsg && <div className="bg-green-100 p-2 mb-4">{successMsg}</div>}
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          {/* Full Name */}
-          <FormField
-            control={form.control}
-            name="fullName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-gray-600 font-semibold">Full Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your full name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Full Name */}
+            <FormField
+              control={form.control}
+              name="fullName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-600 font-semibold">
+                    Full Name
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your full name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Email */}
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-gray-600 font-semibold">Email</FormLabel>
-                <FormControl>
-                  <Input type="email" placeholder="you@example.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            {/* Email */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-600 font-semibold">
+                    Email
+                  </FormLabel>
+                  <FormControl>
+                    <Input type="email" placeholder="you@example.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Company Name */}
-          <FormField
-            control={form.control}
-            name="companyName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-gray-600 font-semibold">Company Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your company name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            {/* Company Name */}
+            <FormField
+              control={form.control}
+              name="companyName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-600 font-semibold">
+                    Company Name
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your company name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Services (Checkbox group) */}
-          <FormField
-            control={form.control}
-            name="services"
-            render={() => (
-              <FormItem>
-                <FormLabel className="text-gray-600 font-semibold">Services</FormLabel>
-                <div className="flex flex-col gap-2">
-                  {["UI/UX", "Branding", "Web Dev", "Mobile App"].map(
-                    (service) => (
-                      <FormField
-                        key={service}
-                        control={form.control}
-                        name="services"
-                        render={({ field }) => {
-                          return (
+            {/* Services */}
+            <FormField
+              control={form.control}
+              name="services"
+              render={() => (
+                <FormItem>
+                  <FormLabel className="text-gray-600 font-semibold">
+                    Services
+                  </FormLabel>
+                  <div className="flex flex-col gap-2">
+                    {["UI/UX", "Branding", "Web Dev", "Mobile App"].map(
+                      (service) => (
+                        <FormField
+                          key={service}
+                          control={form.control}
+                          name="services"
+                          render={({ field }) => (
                             <FormItem className="flex flex-row items-center space-x-2 space-y-0">
                               <FormControl>
                                 <Checkbox
                                   checked={field.value?.includes(service)}
-                                  onCheckedChange={(checked) => {
-                                    return checked
+                                  onCheckedChange={(checked) =>
+                                    checked
                                       ? field.onChange([...field.value, service])
                                       : field.onChange(
                                           field.value?.filter(
                                             (v: string) => v !== service
                                           )
-                                        );
-                                  }}
+                                        )
+                                  }
                                 />
                               </FormControl>
                               <FormLabel className="text-gray-600 font-semibold">
                                 {service}
                               </FormLabel>
                             </FormItem>
-                          );
-                        }}
-                      />
-                    )
-                  )}
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                          )}
+                        />
+                      )
+                    )}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Budget */}
-          <FormField
-            control={form.control}
-            name="budgetUsd"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-gray-600 font-semibold">Budget (USD)</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="1000"
-                    {...field}
-                    onChange={(e) =>
-                      field.onChange(e.target.value ? +e.target.value : undefined)
-                    }
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            {/* Budget */}
+            <FormField
+              control={form.control}
+              name="budgetUsd"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-600 font-semibold">
+                    Budget (USD)
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="1000"
+                      value={field.value ?? ""}
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value ? +e.target.value : undefined
+                        )
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Project Start Date */}
-          <FormField
-            control={form.control}
-            name="projectStartDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-gray-600 font-semibold">Project Start Date</FormLabel>
-                <FormControl>
-                  <Input type="date" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            {/* Project Start Date */}
+            <FormField
+              control={form.control}
+              name="projectStartDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-600 font-semibold">
+                    Project Start Date
+                  </FormLabel>
+                  <FormControl>
+                    <Input type="date" value={field.value ?? ""} onChange={field.onChange} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Accept Terms */}
-          <FormField
-            control={form.control}
-            name="acceptTerms"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <FormLabel className="text-gray-600 font-semibold">
-                  I accept terms
-                </FormLabel>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            {/* Accept Terms */}
+            <FormField
+              control={form.control}
+              name="acceptTerms"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value ?? false}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel className="text-gray-600 font-semibold">
+                    I accept terms
+                  </FormLabel>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <Button type="submit" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting ? "Submitting..." : "Submit"}
-          </Button>
-        </form>
-      </Form>
-     </div>
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? "Submitting..." : "Submit"}
+            </Button>
+          </form>
+        </Form>
+      </div>
     </div>
   );
 }
