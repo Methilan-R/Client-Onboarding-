@@ -87,9 +87,14 @@ export default function Home() {
       setTimeout(() => {
         setSuccessMsg("");
       }, 5000);
-    } catch (err: any) {
-      alert(err.message);
-    }
+    } catch (err: unknown) {
+  if (err instanceof Error) {
+    alert(err.message);
+  } else {
+    alert(String(err));
+  }
+}
+
   };
 
 
