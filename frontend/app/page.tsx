@@ -23,10 +23,12 @@ const schema = z.object({
   services: z.array(z.string()).min(1, "Select at least one"),
   budgetUsd: z
   .number()
-  .int()
+  .int({ message: "Must be an integer" })
   .min(100, { message: "Budget must be at least 100" })
   .max(1000000, { message: "Budget too high" })
-  .refine((val) => !isNaN(val), { message: "Must be a number" }),
+  .refine((val) => typeof val === "number" && !isNaN(val), {
+    message: "Must be a number",
+  }),
 
 
   projectStartDate: z.string().refine(
@@ -60,35 +62,35 @@ export default function Home() {
   });
 
   const onSubmit = async (data: FormValues) => {
-  setSuccessMsg("");
-  try {
-    const res = await fetch(process.env.NEXT_PUBLIC_ONBOARD_URL!, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+    setSuccessMsg("");
+    try {
+      const res = await fetch(process.env.NEXT_PUBLIC_ONBOARD_URL!, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-    if (!res.ok) throw new Error("Failed to submit");
+      if (!res.ok) throw new Error("Failed to submit");
 
-    setSuccessMsg("Form submitted successfully!");
-    form.reset({
-      fullName: "",
-      email: "",
-      companyName: "",
-      services: [],
-      budgetUsd: undefined,
-      projectStartDate: "",
-      acceptTerms: false,
-    });
+      setSuccessMsg("Form submitted successfully!");
+      form.reset({
+        fullName: "",
+        email: "",
+        companyName: "",
+        services: [],
+        budgetUsd: undefined,
+        projectStartDate: "",
+        acceptTerms: false,
+      });
 
-    // Hide message after 5 seconds
-    setTimeout(() => {
-      setSuccessMsg("");
-    }, 5000);
-  } catch (err: any) {
-    alert(err.message);
-  }
-};
+      // Hide message after 5 seconds
+      setTimeout(() => {
+        setSuccessMsg("");
+      }, 5000);
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
 
 
 
@@ -176,10 +178,10 @@ export default function Home() {
                                     checked
                                       ? field.onChange([...field.value, service])
                                       : field.onChange(
-                                          field.value?.filter(
-                                            (v: string) => v !== service
-                                          )
+                                        field.value?.filter(
+                                          (v: string) => v !== service
                                         )
+                                      )
                                   }
                                 />
                               </FormControl>
@@ -212,8 +214,8 @@ export default function Home() {
                       placeholder="1000"
                       value={field.value ?? ""}
                       onChange={(e) =>
-  field.onChange(e.target.value === "" ? "" : +e.target.value)
-}
+                        field.onChange(e.target.value === "" ? "" : +e.target.value)
+                      }
 
                     />
                   </FormControl>
