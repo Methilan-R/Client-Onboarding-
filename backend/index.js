@@ -11,6 +11,10 @@ app.use(express.json())
 app.use('/api',clientRoutes)
 ConnectedToDB()
 
+app.get('/',(req,res)=>{
+    return res.send("Backend is Running")
+})
+
 app.listen(5000,()=>{
     console.log("Server Running on 5000")
 })
