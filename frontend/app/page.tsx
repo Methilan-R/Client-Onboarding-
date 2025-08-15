@@ -64,14 +64,15 @@ export default function Home() {
   const onSubmit = async (data: FormValues) => {
     setSuccessMsg("");
     try {
-      const res = await fetch(
-  `${process.env.NEXT_PUBLIC_ONBOARD_URL}/onboard`,
-  {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  }
-);
+      const baseUrl = process.env.NEXT_PUBLIC_ONBOARD_URL?.replace(/\/$/, "");
+const res = await fetch(`${baseUrl}/onboard`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(data),
+});
+
+
+
 
 
       if (!res.ok) throw new Error("Failed to submit");
