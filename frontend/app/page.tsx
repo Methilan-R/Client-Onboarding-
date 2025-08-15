@@ -85,7 +85,7 @@ export default function Home() {
 
       // Hide message after 5 seconds
       setTimeout(() => {
-        setSuccessMsg("");
+        setSuccessMsg(""); 
       }, 5000);
     } catch (err: unknown) {
   if (err instanceof Error) {
