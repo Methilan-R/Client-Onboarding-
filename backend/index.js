@@ -6,7 +6,7 @@ import clientRoutes from './routes/client.js'
 dotenv.config()
 const app = express()
 app.use(cors({
-  origin: "*",
+  origin: "https://client-onboarding-nd4z.vercel.app",
   methods: ["POST"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
